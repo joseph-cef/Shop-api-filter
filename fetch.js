@@ -8,30 +8,57 @@ async function getData() {
     displayProducts(products);
     setupFilter(products);
   } catch (error) {
-    container.innerHTML = `<p class="text-red-600">Erreur : ${error.message}</p>`;
+    container.textContent = `Erreur : ${error.message}`;
+    container.style.color = "red";
   }
 }
 
 function displayProducts(products) {
-  container.innerHTML = products.map(product => `
-    <div class="bg-white rounded-xl shadow-lg overflow-hidden hover:scale-105 transition transform duration-300">
-      <img src="${product.image}" alt="${product.title}" class="w-full h-48 object-contain p-4 bg-gray-50">
-      <div class="p-4">
-        <h2 class="text-lg font-semibold mb-2 text-gray-800">${product.title}</h2>
-        <p class="text-blue-600 font-bold mb-2">$${product.price}</p>
-        <p class="text-gray-600 text-sm">${product.description.substring(0, 80)}...</p>
-      </div>
-    </div>
-  `).join('');
+  container.innerHTML = "";
+  products.forEach(product => {
+    const card = document.createElement("div");
+    card.className = "bg-white rounded-xl shadow-lg overflow-hidden hover:scale-105 transition transform duration-300";
+
+    const img = document.createElement("img");
+    img.src = product.image;
+    img.alt = product.title;
+    img.className = "w-full h-48 object-contain p-4 bg-gray-50";
+
+    const content = document.createElement("div");
+    content.className = "p-4";
+
+    const title = document.createElement("h2");
+    title.className = "text-lg font-semibold mb-2 text-gray-800";
+    title.textContent = product.title;
+
+    const price = document.createElement("p");
+    price.className = "text-blue-600 font-bold mb-2";
+    price.textContent = `$${product.price}`;
+
+    const desc = document.createElement("p");
+    desc.className = "text-gray-600 text-sm";
+    desc.textContent = product.description.substring(0, 80) + "...";
+
+    content.appendChild(title);
+    content.appendChild(price);
+    content.appendChild(desc);
+
+    card.appendChild(img);
+    card.appendChild(content);
+
+    container.appendChild(card);
+  });
 }
 
 function setupFilter(products) {
   const categories = ["all", ...new Set(products.map(p => p.category))];
-  
-  categoryFilter.innerHTML = categories.map(category => `
-    <option value="${category}">${category.charAt(0).toUpperCase() + category.slice(1)}</option>
-  `).join('');
-
+  categoryFilter.innerHTML = "";
+  categories.forEach(category => {
+    const option = document.createElement("option");
+    option.value = category;
+    option.textContent = category.charAt(0).toUpperCase() + category.slice(1);
+    categoryFilter.appendChild(option);
+  });
   categoryFilter.addEventListener("change", (e) => {
     const selected = e.target.value;
     if (selected === "all") {
